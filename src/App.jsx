@@ -38,7 +38,7 @@ function App() {
   const [datasets, setDatasets] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [top5Countries, setTop5Countries] = useState([]);
-  const [currentYear, setCurrentYear] = useState(1950);
+  const [currentYear, setCurrentYear] = useState(2020);
   const [countryColors, setCountryColors] = useState({});
   const [totalPopulations, setTotalPopulation] = useState(0);
   const [regions, setRegions] = useState(INITIAL_REGIONS);
@@ -57,7 +57,6 @@ function App() {
   const updatedDataByYear = async () => {
     const hiddenCountry = [];
     const hiddenRegions = regions.filter((region) => region.hidden);
-
     await Promise.all(
       hiddenRegions.map(async (region) => {
         const response = await fetch(
@@ -247,11 +246,14 @@ function App() {
             <p
               key={index}
               className="region-text"
+              style={{
+                textDecoration: `${region.hidden ? "line-through" : "none"}`,
+              }}
               onClick={() => {
-                updatedDataByYear();
                 const updatedRegions = [...regions];
                 updatedRegions[index].hidden = !updatedRegions[index].hidden;
                 setRegions(updatedRegions);
+                updatedDataByYear();
               }}
             >
               <div
