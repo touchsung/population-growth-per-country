@@ -38,7 +38,7 @@ function App() {
   const [datasets, setDatasets] = useState([]);
   const [rawData, setRawData] = useState([]);
   const [top5Countries, setTop5Countries] = useState([]);
-  const [currentYear, setCurrentYear] = useState(2020);
+  const [currentYear, setCurrentYear] = useState(1950);
   const [countryColors, setCountryColors] = useState({});
   const [totalPopulations, setTotalPopulation] = useState(0);
   const [regions, setRegions] = useState(INITIAL_REGIONS);
