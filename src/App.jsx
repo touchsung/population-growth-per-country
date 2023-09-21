@@ -3,6 +3,7 @@ import Papa from "papaparse";
 import { Bar } from "react-chartjs-2";
 import { registerables, Chart } from "chart.js";
 import "./App.css";
+import { ClipLoader } from "react-spinners";
 
 Chart.register(...registerables);
 
@@ -40,9 +41,9 @@ function App() {
   const [currentYear, setCurrentYear] = useState(1950);
   const [countryColors, setCountryColors] = useState({});
   const [totalPopulations, setTotalPopulation] = useState(0);
-  const [step, setStep] = useState(1);
   const [regions, setRegions] = useState(INITIAL_REGIONS);
   const [loading, setLoading] = useState(true);
+  const [previousPosition, setPreviosPosition] = useState(7);
 
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -120,12 +121,12 @@ function App() {
     if (!loading) {
       const incrementYear = () => {
         if (currentYear < 2021) {
-          setCurrentYear(currentYear + 1);
           memoizedUpdatedDataByYear();
+          setCurrentYear(currentYear + 1);
         }
       };
 
-      const intervalId = setInterval(incrementYear, 300);
+      const intervalId = setInterval(incrementYear, 1000);
 
       return () => {
         clearInterval(intervalId);
@@ -136,17 +137,22 @@ function App() {
   useEffect(() => {
     if (!loading) {
       const findPosition = () => {
-        if (currentYear >= 2021) return;
-        const yearElement = document.getElementById(currentYear);
-        const nextYearElement = document.getElementById(currentYear + 1);
+        if (currentYear >= 2022) return;
         const triangleElement = document.getElementById("triangle");
+        if (currentYear === 2021) {
+          triangleElement.style.left = previousPosition + "px";
+          triangleElement.style.left = previousPosition + "px";
+        } else {
+          const yearElement = document.getElementById(currentYear);
+          const nextYearElement = document.getElementById(currentYear + 1);
 
-        const diffPosition =
-          nextYearElement.getBoundingClientRect().left -
-          yearElement.getBoundingClientRect().left;
-
-        triangleElement.style.left = 7 + (diffPosition * step + 1) + "px";
-        setStep(step + 1);
+          const horizontalDistance = Math.abs(
+            yearElement.getBoundingClientRect().left -
+              nextYearElement.getBoundingClientRect().left
+          );
+          triangleElement.style.left = previousPosition + "px";
+          setPreviosPosition(previousPosition + horizontalDistance);
+        }
       };
 
       findPosition();
@@ -217,7 +223,18 @@ function App() {
     },
   };
 
-  return (
+  return loading ? (
+    <main
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <ClipLoader size={40} color="#F47E20" />
+    </main>
+  ) : (
     <main className="App">
       <h2 className="title-text">Population by Country 1950 to 2021</h2>
       <p className="subtile-text">

@@ -1,5 +1,5 @@
 main {
-  width: 100vw;
+  width: 100%;
   max-height: 100vh;
 }
 
@@ -7,6 +7,7 @@ main {
   display: flex;
   column-gap: 20px;
   align-items: center;
+  padding-left: 10px;
 }
 
 .region-text {
@@ -19,11 +20,13 @@ main {
   text-align: left;
   font-size: 32px;
   margin-top: 10px;
+  padding: 10px;
 }
 .subtile-text {
   text-align: left;
   font-size: 18px;
   margin-top: -10px;
+  padding-left: 10px;
 }
 
 .chart {
