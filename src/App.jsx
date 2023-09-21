@@ -10,22 +10,27 @@ const INITIAL_REGIONS = [
   {
     name: "Africa",
     hidden: false,
+    color: "#90ccc6",
   },
   {
     name: "Asia",
     hidden: false,
+    color: "#9a9aff",
   },
   {
     name: "Europe",
     hidden: false,
+    color: "#2f7fb3",
   },
   {
     name: "America",
     hidden: false,
+    color: "#700038",
   },
   {
     name: "Oceania",
     hidden: false,
+    color: "#700038",
   },
 ];
 function App() {
@@ -36,8 +41,8 @@ function App() {
   const [countryColors, setCountryColors] = useState({});
   const [totalPopulations, setTotalPopulation] = useState(0);
   const [step, setStep] = useState(1);
-
   const [regions, setRegions] = useState(INITIAL_REGIONS);
+  const [loading, setLoading] = useState(true);
 
   const getRandomColor = () => {
     const letters = "0123456789ABCDEF";
@@ -93,52 +98,60 @@ function App() {
   ]);
 
   useEffect(() => {
-    const fetchDataForYear = () => {
-      Papa.parse("/storage/population-and-demography.csv", {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: ({ data: datas }) => {
-          setRawData(datas);
-        },
-      });
+    const fetchData = () => {
+      Papa.parse(
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vTtLp_z3PbNcTZENA2Jc8xW-q0qW4u--Qf5o1gY3wYSUGZQ2QF3PU4TYjnrDsl0rnN1if5PiPNdOdzz/pub?gid=1593630108&single=true&output=csv",
+        {
+          download: true,
+          header: true,
+          skipEmptyLines: true,
+          complete: ({ data: datas }) => {
+            setRawData(datas);
+            setLoading(false);
+          },
+        }
+      );
     };
 
-    fetchDataForYear();
+    fetchData();
   }, []);
 
   useEffect(() => {
-    const incrementYear = () => {
-      if (currentYear < 2021) {
-        setCurrentYear(currentYear + 1);
-        memoizedUpdatedDataByYear();
-      }
-    };
+    if (!loading) {
+      const incrementYear = () => {
+        if (currentYear < 2021) {
+          setCurrentYear(currentYear + 1);
+          memoizedUpdatedDataByYear();
+        }
+      };
 
-    const intervalId = setInterval(incrementYear, 300);
+      const intervalId = setInterval(incrementYear, 300);
 
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, [currentYear, memoizedUpdatedDataByYear, rawData]);
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, [currentYear, loading, memoizedUpdatedDataByYear]);
 
   useEffect(() => {
-    const findPosition = () => {
-      if (currentYear >= 2021) return;
-      const yearElement = document.getElementById(currentYear);
-      const nextYearElement = document.getElementById(currentYear + 1);
-      const triangleElement = document.getElementById("triangle");
+    if (!loading) {
+      const findPosition = () => {
+        if (currentYear >= 2021) return;
+        const yearElement = document.getElementById(currentYear);
+        const nextYearElement = document.getElementById(currentYear + 1);
+        const triangleElement = document.getElementById("triangle");
 
-      const diffPosition =
-        nextYearElement.getBoundingClientRect().left -
-        yearElement.getBoundingClientRect().left;
+        const diffPosition =
+          nextYearElement.getBoundingClientRect().left -
+          yearElement.getBoundingClientRect().left;
 
-      triangleElement.style.left = 7 + (diffPosition * step + 1) + "px";
-      setStep(step + 1);
-    };
+        triangleElement.style.left = 7 + (diffPosition * step + 1) + "px";
+        setStep(step + 1);
+      };
 
-    findPosition();
-  }, [currentYear]);
+      findPosition();
+    }
+  }, [currentYear, loading]);
 
   const data = {
     labels: datasets.map((data) => data["Country name"]),
@@ -226,7 +239,7 @@ function App() {
             >
               <div
                 style={{
-                  backgroundColor: getRandomColor(),
+                  backgroundColor: region.color,
                   width: "10px",
                   height: "10px",
                   borderRadius: "2px",

@@ -1,5 +1,6 @@
 main {
   width: 100vw;
+  max-height: 100vh;
 }
 
 .region-groups {
@@ -17,6 +18,7 @@ main {
 .title-text {
   text-align: left;
   font-size: 32px;
+  margin-top: 10px;
 }
 .subtile-text {
   text-align: left;
@@ -25,7 +27,7 @@ main {
 }
 
 .chart {
-  width: 100vw;
+  width: 70%;
   position: relative;
 }
 
