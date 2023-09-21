@@ -1,0 +1,90 @@
+main {
+  width: 100vw;
+}
+
+.region-groups {
+  display: flex;
+  column-gap: 20px;
+  align-items: center;
+}
+
+.region-text {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  column-gap: 5px;
+}
+.title-text {
+  text-align: left;
+  font-size: 32px;
+}
+.subtile-text {
+  text-align: left;
+  font-size: 18px;
+  margin-top: -10px;
+}
+
+.chart {
+  width: 100vw;
+  position: relative;
+}
+
+.chart-text {
+  position: absolute;
+  right: 60px;
+  bottom: 0;
+  text-align: right;
+}
+
+.year-text {
+  font-size: 24px;
+  margin-bottom: -10px;
+}
+
+.total-population-text {
+  font-size: 18px;
+}
+
+.timeline {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin-top: 40px;
+}
+
+.timeline-year {
+  font-size: 12px;
+  text-align: center;
+  white-space: nowrap;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  width: 100%;
+}
+
+.timeline-line {
+  width: 100%;
+  position: absolute;
+  top: -15px;
+}
+
+.timeline-minor-scale {
+  position: absolute;
+  display: flex;
+  width: 80%;
+  height: 7px;
+  overflow: hidden;
+  left: 10px;
+  justify-content: space-between;
+  top: -9px;
+}
+
+.triangle {
+  position: absolute;
+  top: -20px;
+  left: 7px;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 10px solid #000;
+  transition: left 0.5s ease-in-out;
+}
