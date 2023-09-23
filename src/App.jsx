@@ -34,10 +34,10 @@ const INITIAL_REGIONS = [
     color: "#700038",
   },
 ];
+
 function App() {
   const [datasets, setDatasets] = useState([]);
-  const [rawData, setRawData] = useState([]);
-  const [top5Countries, setTop5Countries] = useState([]);
+  const [rawData, setRawData] = useState({});
   const [currentYear, setCurrentYear] = useState(1950);
   const [countryColors, setCountryColors] = useState({});
   const [totalPopulations, setTotalPopulation] = useState(0);
@@ -67,28 +67,22 @@ function App() {
       })
     );
 
-    const filteredData = rawData
+    const filteredData = rawData[String(currentYear)]
       .filter((data) => {
-        if (data.Year === String(currentYear)) {
-          const isCountryHidden = hiddenCountry.some(
-            (dataAPI) => dataAPI.name.common === data["Country name"]
-          );
-          return !isCountryHidden;
-        }
-        return false;
+        const isCountryHidden = hiddenCountry.some(
+          (dataAPI) => dataAPI.name.common === data["Country name"]
+        );
+        return !isCountryHidden;
       })
       .sort((a, b) => b.Population - a.Population)
       .slice(0, 12);
 
-    setDatasets(filteredData);
     const totalPopulation = filteredData.reduce((accumulator, data) => {
       return accumulator + parseInt(data.Population, 10);
     }, 0);
 
+    setDatasets(filteredData);
     setTotalPopulation(totalPopulation);
-    setTop5Countries(
-      filteredData.slice(0, 5).map((data) => data["Country name"])
-    );
   };
 
   const memoizedUpdatedDataByYear = useCallback(updatedDataByYear, [
@@ -106,7 +100,22 @@ function App() {
           header: true,
           skipEmptyLines: true,
           complete: ({ data: datas }) => {
-            setRawData(datas);
+            const transformedData = {};
+            datas.forEach((data) => {
+              const year = data.Year;
+
+              if (!transformedData[year]) {
+                transformedData[year] = [];
+              }
+
+              transformedData[year].push({
+                "Country name": data["Country name"],
+                Year: data.Year,
+                Population: data.Population,
+              });
+            });
+
+            setRawData(transformedData);
             setLoading(false);
           },
         }
@@ -197,27 +206,6 @@ function App() {
     plugins: {
       legend: {
         display: false,
-        position: "top",
-        align: "start",
-        labels: {
-          usePointStyle: true,
-          useBorderRadius: false,
-          borderRadius: 0,
-          font: {
-            size: 12,
-          },
-          generateLabels: (chart) => {
-            const { datasets } = chart.data;
-            const legendItems = [];
-            top5Countries.forEach((country, index) => {
-              legendItems.push({
-                text: country,
-                fillStyle: datasets[0].backgroundColor[index],
-              });
-            });
-            return legendItems;
-          },
-        },
       },
     },
   };
@@ -235,7 +223,7 @@ function App() {
     </main>
   ) : (
     <main className="App">
-      <h2 className="title-text">Population by Country 1950 to 2021</h2>
+      <h2 className="title-text">Population growth per country 1950 to 2021</h2>
       <p className="subtile-text">
         Click on the legend below to filter by continet
       </p>
