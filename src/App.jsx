@@ -72,7 +72,7 @@ function App() {
         const isCountryHidden = hiddenCountry.some(
           (dataAPI) => dataAPI.name.common === data["Country name"]
         );
-        return !isCountryHidden;
+        return data.isCountry === "true" && !isCountryHidden;
       })
       .sort((a, b) => b.Population - a.Population)
       .slice(0, 12);
@@ -99,21 +99,31 @@ function App() {
           download: true,
           header: true,
           skipEmptyLines: true,
-          complete: ({ data: datas }) => {
+          complete: async ({ data: datas }) => {
             const transformedData = {};
-            datas.forEach((data) => {
+            const isCountry = {};
+
+            for (const data of datas) {
               const year = data.Year;
 
               if (!transformedData[year]) {
                 transformedData[year] = [];
               }
 
+              if (!isCountry[data["Country name"]]) {
+                const res = await fetch(
+                  "https://restcountries.com/v3.1/name/" + data["Country name"]
+                );
+                isCountry[data["Country name"]] = res.ok ? "true" : "false";
+              }
+
               transformedData[year].push({
                 "Country name": data["Country name"],
                 Year: data.Year,
                 Population: data.Population,
+                isCountry: isCountry[data["Country name"]],
               });
-            });
+            }
 
             setRawData(transformedData);
             setLoading(false);
